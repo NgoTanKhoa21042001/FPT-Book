@@ -11,6 +11,7 @@ using Assignment1.Models;
 using Assignment1.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Assignment1.Controllers
 {
@@ -21,11 +22,14 @@ namespace Assignment1.Controllers
         private readonly int _recordsPerPage = 21;
         private readonly int _recordsPersPage = 20;
         private readonly UserManager<Assignment1User> _userManager;
+        private readonly IEmailSender _emailSender;
 
-        public BooksController(UserContext context, UserManager<Assignment1User> userManager)
+
+        public BooksController(UserContext context, UserManager<Assignment1User> userManager, IEmailSender emailSender)
         {
             _context = context;
             _userManager = userManager;
+            _emailSender = emailSender;
         }
 
         // GET: Books
@@ -84,6 +88,12 @@ namespace Assignment1.Controllers
                 .ToListAsync();
             return View(booksList);
         }
+        public async Task<IActionResult> SendMail()
+        {
+            await _emailSender.SendEmailAsync("hoangconghau2001@gmail.com", "test send mail", "just test");
+            return RedirectToAction("Index", "Carts");
+        }
+
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> AddToCart(string isbn)
         {
@@ -151,7 +161,7 @@ namespace Assignment1.Controllers
                     Console.WriteLine("Error occurred in Checkout" + ex);
                 }
             }
-            return RedirectToAction("Index", "Carts");
+            return RedirectToAction("SendMail");
         }
 
         // GET: Books/Details/5
