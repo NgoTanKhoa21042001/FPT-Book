@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Assignment1.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class Relationship : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -210,7 +210,7 @@ namespace Assignment1.Migrations
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
                     Desc = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImgUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImgUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StoreId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -222,6 +222,30 @@ namespace Assignment1.Migrations
                         principalTable: "Store",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cart",
+                columns: table => new
+                {
+                    UId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BookIsbn = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cart", x => new { x.UId, x.BookIsbn });
+                    table.ForeignKey(
+                        name: "FK_Cart_AspNetUsers_UId",
+                        column: x => x.UId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Cart_Book_BookIsbn",
+                        column: x => x.BookIsbn,
+                        principalTable: "Book",
+                        principalColumn: "Isbn");
                 });
 
             migrationBuilder.CreateTable(
@@ -240,13 +264,12 @@ namespace Assignment1.Migrations
                         column: x => x.BookIsbn,
                         principalTable: "Book",
                         principalColumn: "Isbn",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderDetail_Order_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Order",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -294,6 +317,11 @@ namespace Assignment1.Migrations
                 column: "StoreId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Cart_BookIsbn",
+                table: "Cart",
+                column: "BookIsbn");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Order_UId",
                 table: "Order",
                 column: "UId");
@@ -326,6 +354,9 @@ namespace Assignment1.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Cart");
 
             migrationBuilder.DropTable(
                 name: "OrderDetail");

@@ -28,6 +28,7 @@ namespace Assignment1.Controllers
         [Authorize(Roles ="Customer")]
         public async Task<IActionResult> Index()
         {
+            ViewBag.OrderId = _context.OrderDetail.ToList();
             string thisUserId = _userManager.GetUserId(HttpContext.User);
             var userContext = _context.Order.Where(o => o.UId == thisUserId).Include(o => o.User);
             return View(await userContext.ToListAsync());
@@ -40,7 +41,7 @@ namespace Assignment1.Controllers
             Store thisStore = await _context.Store.FirstOrDefaultAsync(s => s.UId == thisUser.Id);
 
             OrderDetail thisOrderDetail = _context.OrderDetail.FirstOrDefault(o => o.Book.StoreId == thisStore.Id);
-            var userContext = _context.Order.Where(o => o.Id == thisOrderDetail.OrderId).Include(o => o.User);
+            var userContext = _context.Order/*.Where(o => o.Id == thisOrderDetail.OrderId)*/.Include(o => o.User);
             return View(await userContext.ToListAsync());
         }
         //public async Task<IActionResult> Remove(string id)

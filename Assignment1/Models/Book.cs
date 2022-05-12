@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Assignment1.Models
 {
@@ -19,5 +21,7 @@ namespace Assignment1.Models
         public Store? Store { get; set; }
         public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
         public virtual ICollection<Cart>? Carts { get; set; }
+ 
+        
     }
 }

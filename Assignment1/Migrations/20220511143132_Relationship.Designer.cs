@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Assignment1.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20220420044813_CreateIdentitySchema")]
-    partial class CreateIdentitySchema
+    [Migration("20220511143132_Relationship")]
+    partial class Relationship
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -113,7 +113,6 @@ namespace Assignment1.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImgUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Pages")
@@ -134,6 +133,24 @@ namespace Assignment1.Migrations
                     b.HasIndex("StoreId");
 
                     b.ToTable("Book");
+                });
+
+            modelBuilder.Entity("Assignment1.Models.Cart", b =>
+                {
+                    b.Property<string>("UId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BookIsbn")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("UId", "BookIsbn");
+
+                    b.HasIndex("BookIsbn");
+
+                    b.ToTable("Cart");
                 });
 
             modelBuilder.Entity("Assignment1.Models.Order", b =>
@@ -359,6 +376,25 @@ namespace Assignment1.Migrations
                     b.Navigation("Store");
                 });
 
+            modelBuilder.Entity("Assignment1.Models.Cart", b =>
+                {
+                    b.HasOne("Assignment1.Models.Book", "Book")
+                        .WithMany("Carts")
+                        .HasForeignKey("BookIsbn")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Assignment1.Areas.Identity.Data.Assignment1User", "User")
+                        .WithMany("Carts")
+                        .HasForeignKey("UId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Assignment1.Models.Order", b =>
                 {
                     b.HasOne("Assignment1.Areas.Identity.Data.Assignment1User", "User")
@@ -381,7 +417,7 @@ namespace Assignment1.Migrations
                     b.HasOne("Assignment1.Models.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Book");
@@ -453,6 +489,8 @@ namespace Assignment1.Migrations
 
             modelBuilder.Entity("Assignment1.Areas.Identity.Data.Assignment1User", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("Orders");
 
                     b.Navigation("Store");
@@ -460,6 +498,8 @@ namespace Assignment1.Migrations
 
             modelBuilder.Entity("Assignment1.Models.Book", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("OrderDetails");
                 });
 

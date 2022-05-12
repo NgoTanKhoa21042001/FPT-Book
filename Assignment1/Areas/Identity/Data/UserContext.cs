@@ -35,13 +35,15 @@ public class UserContext : IdentityDbContext<Assignment1User>
             .HasOne<Assignment1User>(o => o.User)
             .WithMany(ap => ap.Orders)
             .HasForeignKey(o => o.UId);
+           
 
         builder.Entity<OrderDetail>()
             .HasKey(od => new { od.OrderId, od.BookIsbn });
         builder.Entity<OrderDetail>()
             .HasOne<Order>(od => od.Order)
             .WithMany(or => or.OrderDetails)
-            .HasForeignKey(od => od.OrderId);
+            .HasForeignKey(od => od.OrderId)
+            .OnDelete(DeleteBehavior.NoAction);
         builder.Entity<OrderDetail>()
             .HasOne<Book>(od => od.Book)
             .WithMany(b => b.OrderDetails)

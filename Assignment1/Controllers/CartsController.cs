@@ -30,6 +30,7 @@ namespace Assignment1.Controllers
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Index()
         {
+            ViewBag.CartCount = _context.Cart.Count();
             string thisUserId = _userManager.GetUserId(HttpContext.User);
             var userContext = _context.Cart.Where(c => c.UId == thisUserId).Include(c => c.Book).Include(c => c.User);
             return View(userContext.ToList());

@@ -1,4 +1,5 @@
 ﻿using Assignment1.Areas.Identity.Data;
+using Assignment1.Data;
 using Assignment1.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,10 +10,12 @@ namespace Assignment1.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly UserContext _context;
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<Assignment1User> _userManager;
-        public HomeController(ILogger<HomeController> logger, UserManager<Assignment1User> userManager)
+        public HomeController(ILogger<HomeController> logger, UserManager<Assignment1User> userManager, UserContext context)
         {
+            _context = context;
             _logger = logger;
             _userManager = userManager;
         }
@@ -33,7 +36,8 @@ namespace Assignment1.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var obj = _context.Book.ToList();   
+            return View(obj);
         }
 
         public IActionResult Privacy()

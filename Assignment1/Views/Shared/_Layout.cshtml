@@ -25,15 +25,14 @@
                         @if (User.IsInRole("Seller"))
                         {
                             <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Books" asp-action="Index">Manage Books </a>
-                            </li>   
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Books" asp-action="Index">Book Manage</a>
+                            </li>
                             <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Stores" asp-action="Index">Store</a>
                             </li>
                             <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Orders" asp-action="manage">OrderManager</a>
                             </li>
-
                             
                         }
                          @if (User.IsInRole("Customer"))
@@ -42,7 +41,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Books" asp-action="List"> Books </a>
                             </li>
                             <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Carts" asp-action="Index">Cart</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Carts" asp-action="Index">Cart @ViewBag.CartCount</a>
                             </li>
                             <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Orders" asp-action="Index">Order History</a>

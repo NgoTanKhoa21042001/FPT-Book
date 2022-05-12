@@ -10,6 +10,7 @@ using Assignment1.Data;
 using Assignment1.Models;
 using Microsoft.AspNetCore.Identity;
 using Assignment1.Areas.Identity.Data;
+using System.Security.Claims;
 
 namespace Assignment1.Controllers
 {
@@ -17,8 +18,10 @@ namespace Assignment1.Controllers
     {
         private readonly UserContext _context;
         private readonly UserManager<Assignment1User> _userManager;
-        public StoresController(UserContext context, UserManager<Assignment1User> userManager)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public StoresController(UserContext context, UserManager<Assignment1User> userManager, IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;
             _context = context;
             _userManager = userManager;
         }
@@ -26,9 +29,9 @@ namespace Assignment1.Controllers
         // GET: Stores
         public async Task<IActionResult> Index()
         {
-            Assignment1User thisUser = await _userManager.GetUserAsync(HttpContext.User);
-            var userContext = _context.Store.Include(s => s.User).Where(s => s.UId == thisUser.Id);
-            return View(await userContext.ToListAsync());
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var obj = await _context.Store.Where(x => x.UId == userId).ToListAsync();
+            return View(obj);
         }
 
         // GET: Stores/Details/5
@@ -53,7 +56,7 @@ namespace Assignment1.Controllers
         // GET: Stores/Create
         public IActionResult Create()
         {
-            ViewData["UId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewBag.UserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value; 
             return View();
         }
 
@@ -161,5 +164,16 @@ namespace Assignment1.Controllers
         {
             return _context.Store.Any(e => e.Id == id);
         }
+        public IActionResult BookInStore(int? id)
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult BookInStore(int id)
+        {
+            var obj = _context.Book.Include(x=>x.Store).Where(x => x.StoreId == id);
+            return View(obj);
     }
+    }
+
 }

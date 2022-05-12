@@ -7,7 +7,11 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    @if (!Model.Any())
+    {
+        <a asp-action="Create">Create New</a>
+    }
+    
 </p>
 <table class="table">
     <thead>
@@ -44,7 +48,9 @@
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-controller="Stores" asp-action="BookInStore" asp-route-id="@item.Id" class="btn btn-success text-white" style="cursor:pointer">
+                        <i class="fa fa-book" aria-hidden="true"></i> Product
+                    </a>
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>

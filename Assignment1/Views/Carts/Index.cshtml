@@ -8,7 +8,7 @@
 @if(Model.Count()>0)
 {
 	double Total = 0;
-	int Stt = 1;
+	int Stt = 0;
 <table class="table table-bordered">
 	<thead>
 		<tr>
@@ -28,7 +28,7 @@
 				@Html.DisplayNameFor(model => model.Quantity)
 			</th>
 			<th>
-				Total Item
+				Total Price
 			</th>
 		</tr>
 	</thead>
@@ -76,6 +76,6 @@
 }
 else
 {
-	<p class="alert alert-danger">Cart Successfull</p>
+	<p class="alert alert-success">Cart Successfull</p>
 }
 <a asp-controller="Orders" asp-action="Index" class="btn btn-primary">History Order </a>

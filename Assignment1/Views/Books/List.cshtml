@@ -17,11 +17,22 @@
        </form>
     </div>
       <div class="row">
-          @for (var i = 0; i < @Model.Count; i++)
+          @for (var i = 0; i < @Model.Count; i++) //Rồi đó, ok rồi đó 
+          // xóa cái dư ở dưới duyên, xóa ở dưới hong đc đou, cứ demo thầy rứa đi, bảo em dùng toán tử && mà k đc
+          // ok
+          // mà cái dưới ở đâu dị
           {
               <div class="col-md-4 col-6">
                   <div class="card" style="width: 18rem;">
-                      <img src="@Model[i].ImgUrl" class="card-img-top" alt="...">
+                     @if(Model[i].ImgUrl != null)
+                    {
+                        <td>
+                            
+                    <img src="@Html.DisplayFor(modelItem => Model[i].ImgUrl) "/> 
+                    @* <img src="@("~/image/" + Model[i].ImgUrl)" asp-append-version="true" width="250px" height="250px">*@
+                   
+                </td> 
+                    }
                       <div class="card-body">
                           <h5 class="card-title">@Model[i].Title</h5>
                           <a asp-action="Details" class="btn btn-primary" asp-route-id="@Model[i].Isbn">Details</a> |
@@ -33,7 +44,7 @@
           }
       </div>
   </div>
-  <div style="display:flex;text-align:center;justify-content:center">
+  @*<div style="display:flex;text-align:center;justify-content:center">
       <nav aria-label="Page navigation example">
           <ul class="pagination">
               @for (var i = 0; i < @ViewBag.numberOfPages; i++)
@@ -41,6 +52,20 @@
                   var style = (ViewBag.currentPage == @i) ? "active" : "";
                   <li class="page-item @style">
                       <a class="page-link" asp-route-id="@i" asp-route-searchString ="@ViewData["CurrentFilter"]">@(i+1)</a>
+                  </li>
+              }
+          </ul>
+      </nav>
+  </div>*@
+  <div style="display:flex;text-align:center;justify-content:center">
+      <nav aria-label="Page navigation example">
+          <ul class="pagination">
+              @for (var i = 0; i < @ViewBag.numberOfPages; i++)
+              {
+                  var style = (ViewBag.currentPage == @i) ? "active" : "";
+                  <li class="page-item @style">
+                      <a class="page-link" asp-route-id="@i"
+                      asp-route-searchString="@ViewData["CurrentFilter"]">@(i+1)</a>
                   </li>
               }
           </ul>

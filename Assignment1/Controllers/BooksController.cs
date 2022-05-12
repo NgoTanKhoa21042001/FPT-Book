@@ -12,6 +12,7 @@ using Assignment1.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Security.Claims;
 
 namespace Assignment1.Controllers
 {
@@ -20,13 +21,15 @@ namespace Assignment1.Controllers
     {
         private readonly UserContext _context;
         private readonly int _recordsPerPage = 21;
-        private readonly int _recordsPersPage = 20;
+        private readonly int _recordsPersPage = 21;
         private readonly UserManager<Assignment1User> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-
-        public BooksController(UserContext context, UserManager<Assignment1User> userManager, IEmailSender emailSender)
+        public BooksController(UserContext context, UserManager<Assignment1User> userManager, IEmailSender emailSender, IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;
+
             _context = context;
             _userManager = userManager;
             _emailSender = emailSender;
@@ -73,7 +76,7 @@ namespace Assignment1.Controllers
             if (!String.IsNullOrEmpty(searchString))
             {
                 books = books.Where(b => b.Title.Contains(searchString)
-                                       || b.Category.Contains(searchString));
+                                       || b.Desc.Contains(searchString));
             }
 
 
@@ -90,7 +93,7 @@ namespace Assignment1.Controllers
         }
         public async Task<IActionResult> SendMail()
         {
-            await _emailSender.SendEmailAsync("hoangconghau2001@gmail.com", "test send mail", "just test");
+            await _emailSender.SendEmailAsync("Kakashi21042001@gmail.com", "test send mail", "just test");
             return RedirectToAction("Index", "Carts");
         }
 
@@ -196,19 +199,20 @@ namespace Assignment1.Controllers
         [Authorize(Roles = "Seller")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile image, [Bind("Isbn,Title,Pages,Author,Category,Price,Desc,ImgUrl")] Book book)
+        public async Task<IActionResult> Create(/*[Bind("Isbn,Title,Pages,Author,Category,Price,Desc,ImgUrl")]*/ Book book, IFormFile image)
         {
             if (image != null)
             {
                 //set key name
                 string ImageName = book.Isbn + Path.GetExtension(image.FileName);
 
-                string SavePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Image", ImageName);
+                string SavePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", ImageName);
                 using (var stream = new FileStream(SavePath, FileMode.Create))
                 {
                     image.CopyTo(stream);
                 }
-                book.ImgUrl = "img/" + ImageName;
+                book.ImgUrl =  ImageName;
+    
                 Assignment1User thisUser = await _userManager.GetUserAsync(HttpContext.User);
                 Store thisStore = await _context.Store.FirstOrDefaultAsync(s => s.UId == thisUser.Id);
                 book.StoreId = thisStore.Id;
@@ -286,7 +290,7 @@ namespace Assignment1.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","Stores");
             }
             ViewData["StoreId"] = new SelectList(_context.Store, "Id", "Id", book.StoreId);
             return View(book);
@@ -327,7 +331,7 @@ namespace Assignment1.Controllers
             {
                 _context.Book.Remove(book);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Stores");
             }
             catch (DbUpdateException ex)
             {
@@ -341,5 +345,13 @@ namespace Assignment1.Controllers
         {
             return _context.Book.Any(e => e.Isbn == id);
         }
+        public IActionResult BookList()
+        {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var obj = _context.Book.Where(x => x.Store.UId == userId).ToList();
+;            return View(obj);
+        }
+
     }
+
 }
